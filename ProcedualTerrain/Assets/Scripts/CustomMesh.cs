@@ -32,18 +32,19 @@ public class CustomMesh{
         //Generate verticies
         for (int i = 0, v = 0; v < height; v++) {
             for (int u = 0; u < width; i++, u++) {
-                customMesh.verticies[i] = new Vector3(u, noiseMap[u,v], v); //horizontal mesh, also the verticies are spaced 1 unit apart
-                customMesh.uvs[i] = new Vector2((float)u / width, (float)v / height);
+
+                customMesh.verticies[i] = new Vector3(u, noiseMap[u, v], v); //horizontal mesh, also the verticies are spaced 1 unit apart
+                customMesh.uvs[i] = new Vector2((float)(u / width), (float)(v / height));
             }
         }
 
         //Generate triangles
-        for (int v = 0; v < height; v++) {
-            for (int u = 0, ti = 0; u < width; u++, ti += 6) {
-                customMesh.triangles[ti + 0] = u + v;
-                customMesh.triangles[ti+2] = customMesh.triangles[ti+4] = (u+1) + v;
-                customMesh.triangles[ti+1] = customMesh.triangles[ti+5] = (u+width) + v;
-                customMesh.triangles[ti+3] = (u+width+1) + v;
+        for (int v = 0; v < height-1; v++) {
+            for (int u = 0, ti = 0, vi = 0; u < width-1; u++, ti += 6, vi++) {
+                customMesh.triangles[ti+0] = vi;
+                customMesh.triangles[ti+2] = customMesh.triangles[ti+4] = vi+1;
+                customMesh.triangles[ti+1] = customMesh.triangles[ti+5] = vi+width;
+                customMesh.triangles[ti+3] = vi+width+1;
             }
         }
 

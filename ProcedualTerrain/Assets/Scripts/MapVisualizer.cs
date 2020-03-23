@@ -4,10 +4,25 @@ using UnityEngine;
 
 public class MapVisualizer : MonoBehaviour {
 
-    public Renderer plane;
+    public GameObject plane;
+    public GameObject mesh;
 
-    public void PlaneVisualizer(Color[] colorMap, int width, int height) {
+    public void PlaneVisualizer(Texture2D tex) {
+        Renderer r = plane.GetComponent<Renderer>();
+        //allows texture to be updated outside of runtime
+        r.sharedMaterial.mainTexture = tex;
+        r.transform.localScale = new Vector3(tex.width, 1, tex.height);
+    }
 
+    public void MeshVisualizer(Texture2D tex, CustomMesh customMesh) {
+        MeshFilter meshFilter = mesh.GetComponent<MeshFilter>();
+        MeshRenderer meshRenderer = mesh.GetComponent<MeshRenderer>();
+
+        meshFilter.sharedMesh = customMesh.CreateMesh();
+        meshRenderer.sharedMaterial.mainTexture = tex;
+    }
+
+    public Texture2D GenerateTexture(Color[] colorMap, int width, int height) {
         Texture2D tex = new Texture2D(width, height);
         tex.filterMode = FilterMode.Point;
         tex.wrapMode = TextureWrapMode.Clamp;
@@ -15,9 +30,7 @@ public class MapVisualizer : MonoBehaviour {
         tex.SetPixels(colorMap);
         tex.Apply();
 
-        //allows texture to be updated outside of runtime
-        plane.sharedMaterial.mainTexture = tex;
-        plane.transform.localScale = new Vector3(width, 1, height);
+        return tex;
     }
 
     public Color[] GenerateNoiseColorMap(float[,] noiseMap) {

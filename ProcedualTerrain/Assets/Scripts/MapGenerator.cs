@@ -23,14 +23,23 @@ public class MapGenerator : MonoBehaviour {
     public TerrainLayer[] layers;
 
     public void GenerateMap() {
+        MapVisualizer mv = GetComponent<MapVisualizer>();
+
         float[,] noiseMap = GeneratePerlinNoiseMap(seed, offset, width, height, noiseScale, octaves, persistance, lacunarity);
 
-        MapVisualizer mv = GetComponent<MapVisualizer>();
+        
         if (drawMode == DrawMode.NoiseMap) {
-            mv.PlaneVisualizer(mv.GenerateNoiseColorMap(noiseMap),width,height);
+            Texture2D tex = mv.GenerateTexture(mv.GenerateNoiseColorMap(noiseMap),width,height);
+            mv.PlaneVisualizer(tex);
         } else if (drawMode == DrawMode.ColorMap) {
-            mv.PlaneVisualizer(mv.GenerateDepthColorMap(noiseMap,layers),width,height);
-        } 
+            Texture2D tex = mv.GenerateTexture(mv.GenerateDepthColorMap(noiseMap,layers),width,height);
+            mv.PlaneVisualizer(tex);
+        } else if (drawMode == DrawMode.Mesh) {
+            Texture2D tex = mv.GenerateTexture(mv.GenerateDepthColorMap(noiseMap, layers), width, height);
+            CustomMesh customMesh = CustomMesh.GenerateHeightMesh(noiseMap);
+            mv.MeshVisualizer(tex,customMesh);
+            
+        }
         
         
     }
