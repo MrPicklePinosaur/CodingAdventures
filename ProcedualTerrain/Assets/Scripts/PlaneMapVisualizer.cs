@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MapVisualizer : MonoBehaviour {
+public class PlaneMapVisualizer : MonoBehaviour {
 
     public Renderer plane;
-
 
     public void DrawNoiseMap(float[,] noiseMap) {
         int width = noiseMap.GetLength(0);
