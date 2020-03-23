@@ -262,7 +262,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 10
   height: 10
-  noiseScale: -0.01
+  noiseScale: 0.8
+  octaves: 4
+  persistance: 0.16
+  lacunarity: 0.2
 --- !u!1 &2068215175
 GameObject:
   m_ObjectHideFlags: 0

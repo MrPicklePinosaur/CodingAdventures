@@ -15,7 +15,7 @@ public class MapVisualizer : MonoBehaviour {
         //map noise map onto color map
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                colorMap[y * width + x] = Color.Lerp(Color.white, Color.black, noiseMap[x, y]);
+                colorMap[y * width + x] = Color.Lerp(Color.black, Color.white, noiseMap[x, y]);
             }
         }
         tex.SetPixels(colorMap);
