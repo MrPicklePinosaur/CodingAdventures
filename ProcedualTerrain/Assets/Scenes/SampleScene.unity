@@ -260,12 +260,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed4cd33f55bd2a748aecf4a0a07a1723, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 10
-  height: 10
-  noiseScale: 0.8
-  octaves: 4
-  persistance: 0.16
-  lacunarity: 0.2
+  seed: 34
+  offset: {x: -0.25, y: 0.21}
+  width: 100
+  height: 100
+  noiseScale: 12.99
+  octaves: 3
+  persistance: 1
+  lacunarity: 1.97
 --- !u!1 &2068215175
 GameObject:
   m_ObjectHideFlags: 0
@@ -354,7 +356,7 @@ Transform:
   m_GameObject: {fileID: 2068215175}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 1, z: 10}
+  m_LocalScale: {x: 100, y: 1, z: 100}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
