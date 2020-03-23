@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-[RequireComponent(typeof(PlaneMapVisualizer))]
+[RequireComponent(typeof(MapVisualizer))]
 public class MapGenerator : MonoBehaviour {
 
     public enum DrawMode { NoiseMap, ColorMap, Mesh };
@@ -25,10 +25,11 @@ public class MapGenerator : MonoBehaviour {
     public void GenerateMap() {
         float[,] noiseMap = GeneratePerlinNoiseMap(seed, offset, width, height, noiseScale, octaves, persistance, lacunarity);
 
+        MapVisualizer mv = GetComponent<MapVisualizer>();
         if (drawMode == DrawMode.NoiseMap) {
-            GetComponent<PlaneMapVisualizer>().DrawNoiseMap(noiseMap);
+            mv.PlaneVisualizer(mv.GenerateNoiseColorMap(noiseMap),width,height);
         } else if (drawMode == DrawMode.ColorMap) {
-            GetComponent<PlaneMapVisualizer>().DrawColorMap(noiseMap,layers);
+            mv.PlaneVisualizer(mv.GenerateDepthColorMap(noiseMap,layers),width,height);
         } 
         
         
