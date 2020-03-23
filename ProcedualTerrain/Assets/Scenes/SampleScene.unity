@@ -260,14 +260,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed4cd33f55bd2a748aecf4a0a07a1723, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seed: 34
-  offset: {x: -0.25, y: 0.21}
+  drawMode: 1
+  seed: 21
+  offset: {x: 17.4, y: 0.21}
   width: 100
   height: 100
-  noiseScale: 12.99
+  noiseScale: 17.24
   octaves: 3
-  persistance: 1
-  lacunarity: 1.97
+  persistance: 0.84
+  lacunarity: 2.1
+  layers:
+  - name: water
+    depth: 0.4
+    color: {r: 0.2783019, g: 0.5190257, b: 1, a: 0}
+  - name: beach
+    depth: 0.48
+    color: {r: 0.83468574, g: 0.8490566, b: 0.38047346, a: 0}
+  - name: land
+    depth: 0.6
+    color: {r: 0.21484515, g: 0.6415094, b: 0.42902312, a: 0}
+  - name: mountain
+    depth: 0.8
+    color: {r: 0.26041293, g: 0.26415092, b: 0.2622648, a: 0}
+  - name: mountain_peak
+    depth: 1
+    color: {r: 1, g: 1, b: 1, a: 0}
 --- !u!1 &2068215175
 GameObject:
   m_ObjectHideFlags: 0

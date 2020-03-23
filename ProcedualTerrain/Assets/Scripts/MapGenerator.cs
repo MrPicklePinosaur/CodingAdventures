@@ -6,6 +6,9 @@ using UnityEngine.Assertions;
 [RequireComponent(typeof(MapVisualizer))]
 public class MapGenerator : MonoBehaviour {
 
+    public enum DrawMode { NoiseMap, ColorMap };
+    public DrawMode drawMode;
+
     public int seed;
     public Vector2 offset;
 
@@ -14,13 +17,21 @@ public class MapGenerator : MonoBehaviour {
     public float noiseScale;
 
     public int octaves; //number of detail iterations
-    [Range(0f,1f)] public float persistance; //amplitude
+    [Range(0f, 1f)] public float persistance; //amplitude
     public float lacunarity; //frequency
+
+    public TerrainLayer[] layers;
 
     public void GenerateMap() {
         float[,] noiseMap = GeneratePerlinNoiseMap(seed, offset, width, height, noiseScale, octaves, persistance, lacunarity);
 
-        GetComponent<MapVisualizer>().RenderNoiseMap(noiseMap);
+        if (drawMode == DrawMode.NoiseMap) {
+            GetComponent<MapVisualizer>().DrawNoiseMap(noiseMap);
+        } else if (drawMode == DrawMode.ColorMap) {
+            GetComponent<MapVisualizer>().DrawColorMap(noiseMap,layers);
+        }
+        
+        
     }
 
     public static float[,] GeneratePerlinNoiseMap(int seed, Vector2 offset, int width, int height, float scale, int octaves, float persistance, float lacunarity) {
@@ -28,7 +39,7 @@ public class MapGenerator : MonoBehaviour {
         System.Random prng = new System.Random(seed);
         Vector2[] octaveOffsets = new Vector2[octaves]; //offset each octave
         for (int i = 0; i < octaves; i++) {
-            octaveOffsets[i] = new Vector2(prng.Next(-100000, 100000)+offset.x, prng.Next(-100000, 100000)+offset.y);
+            octaveOffsets[i] = new Vector2(prng.Next(-100000, 100000) + offset.x, prng.Next(-100000, 100000) + offset.y);
         }
 
         float[,] noiseMap = new float[width, height];
@@ -44,21 +55,21 @@ public class MapGenerator : MonoBehaviour {
                 float noise = 0;
 
                 for (int i = 0; i < octaves; i++) {
-                    float px = (x-width/2) / scale * freq + octaveOffsets[i].x;
-                    float py = (y-height/2) / scale * freq + octaveOffsets[i].y;
+                    float px = (x - width / 2) / scale * freq + octaveOffsets[i].x;
+                    float py = (y - height / 2) / scale * freq + octaveOffsets[i].y;
                     float perlinValue = Mathf.PerlinNoise(px, py);
                     noise += perlinValue * amp;
 
                     //modify freq and amp per iteration
                     amp *= persistance;
                     freq *= lacunarity;
-                    
+
                 }
                 noiseMap[x, y] = noise;
 
                 if (noise < minNoise) { minNoise = noise; }
                 if (noise > maxNoise) { maxNoise = noise; }
-                
+
             }
         }
 
@@ -79,4 +90,11 @@ public class MapGenerator : MonoBehaviour {
         if (lacunarity < 1) { lacunarity = 1; }
         if (octaves < 0) { octaves = 0; }
     }
+}
+
+[System.Serializable]
+public struct TerrainLayer {
+    public string name;
+    [Range(0f, 1f)] public float depth;
+    public Color color;
 }
