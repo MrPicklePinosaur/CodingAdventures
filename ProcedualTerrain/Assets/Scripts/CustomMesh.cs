@@ -23,34 +23,38 @@ public class CustomMesh{
         return mesh;
     }
 
-    public static CustomMesh GenerateHeightMesh(float[,] noiseMap) {
+    public static CustomMesh GenerateHeightMesh(float[,] noiseMap, float meshHeightModifier, AnimationCurve heightCurve, int lod) {
 
         int width = noiseMap.GetLength(0);
         int height = noiseMap.GetLength(1);
-        CustomMesh customMesh = new CustomMesh(width, height);
+
+        int inc = (lod == 0) ? 1 : lod * 2;
+        int vert = (width - 1) / inc + 1;
+
+        CustomMesh customMesh = new CustomMesh(width,height);
 
         //populate verticies
-        for (int v = 0, i = 0; v < height; v++) {
-            for (int u = 0; u < width; u++, i++) {
-                customMesh.verticies[i] = new Vector3(u-(width-1)/2f, noiseMap[u,v], v-(height-1)/2f);
+        for (int v = 0, i = 0; v < height; v+=inc) {
+            for (int u = 0; u < width; u+=inc, i++) {
+                customMesh.verticies[i] = new Vector3(u-(width-1)/2f, heightCurve.Evaluate(noiseMap[u,v])*meshHeightModifier, v-(height-1)/2f);
                 customMesh.uvs[i] = new Vector2((float)u / width, (float)v / height);
             }
         }
 
         //Generate triangles
         //Generate triangles
-        for (int v = 0, ti = 0, vi = 0; v < height-1; v++, vi++) {
-            for (int u = 0; u < width-1; u++, ti += 6, vi++) {
+        for (int v = 0, ti = 0, vi = 0; v < vert-1; v++, vi++) {
+            for (int u = 0; u < vert-1; u++, ti += 6, vi++) {
                 //triangle 1
                 customMesh.triangles[ti] = vi;
-                customMesh.triangles[ti + 1] = vi + width;
+                customMesh.triangles[ti + 1] = vi + vert;
                 customMesh.triangles[ti + 2] = vi + 1;
 
 
                 //triangle 2
                 customMesh.triangles[ti + 3] = vi + 1;
-                customMesh.triangles[ti + 4] = vi + width;
-                customMesh.triangles[ti + 5] = vi + width + 1;
+                customMesh.triangles[ti + 4] = vi + vert;
+                customMesh.triangles[ti + 5] = vi + vert + 1;
 
             }
         }

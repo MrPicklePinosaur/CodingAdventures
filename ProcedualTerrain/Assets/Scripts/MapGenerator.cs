@@ -9,11 +9,14 @@ public class MapGenerator : MonoBehaviour {
     public enum DrawMode { NoiseMap, ColorMap, Mesh };
     public DrawMode drawMode;
 
+    public float meshHeightModifier;
+    public AnimationCurve heightCurve;
+
     public int seed;
     public Vector2 offset;
 
-    public int width;
-    public int height;
+    const int chunkSize = 241;
+    [Range(0,6)]public int lod;
     public float noiseScale;
 
     public int octaves; //number of detail iterations
@@ -25,18 +28,18 @@ public class MapGenerator : MonoBehaviour {
     public void GenerateMap() {
         MapVisualizer mv = GetComponent<MapVisualizer>();
 
-        float[,] noiseMap = GeneratePerlinNoiseMap(seed, offset, width, height, noiseScale, octaves, persistance, lacunarity);
+        float[,] noiseMap = GeneratePerlinNoiseMap(seed, offset, chunkSize, chunkSize, noiseScale, octaves, persistance, lacunarity);
 
         
         if (drawMode == DrawMode.NoiseMap) {
-            Texture2D tex = mv.GenerateTexture(mv.GenerateNoiseColorMap(noiseMap),width,height);
+            Texture2D tex = mv.GenerateTexture(mv.GenerateNoiseColorMap(noiseMap),chunkSize,chunkSize);
             mv.PlaneVisualizer(tex);
         } else if (drawMode == DrawMode.ColorMap) {
-            Texture2D tex = mv.GenerateTexture(mv.GenerateDepthColorMap(noiseMap,layers),width,height);
+            Texture2D tex = mv.GenerateTexture(mv.GenerateDepthColorMap(noiseMap,layers),chunkSize,chunkSize);
             mv.PlaneVisualizer(tex);
         } else if (drawMode == DrawMode.Mesh) {
-            Texture2D tex = mv.GenerateTexture(mv.GenerateDepthColorMap(noiseMap, layers), width, height);
-            CustomMesh customMesh = CustomMesh.GenerateHeightMesh(noiseMap);
+            Texture2D tex = mv.GenerateTexture(mv.GenerateDepthColorMap(noiseMap, layers), chunkSize, chunkSize);
+            CustomMesh customMesh = CustomMesh.GenerateHeightMesh(noiseMap,meshHeightModifier,heightCurve,lod);
             mv.MeshVisualizer(tex,customMesh);
             
         }
@@ -94,8 +97,6 @@ public class MapGenerator : MonoBehaviour {
 
     void OnValidate() { //called when one variable is changed
         //clamp all values
-        if (width < 1) { width = 1; }
-        if (height < 1) { height = 1; }
         if (noiseScale <= 0) { noiseScale = 0.0001f; }
         if (lacunarity < 1) { lacunarity = 1; }
         if (octaves < 0) { octaves = 0; }
