@@ -22,8 +22,8 @@ public class MapVisualizer : MonoBehaviour {
         meshRenderer.sharedMaterial.mainTexture = tex;
     }
 
-    public Texture2D GenerateTexture(Color[] colorMap, int width, int height) {
-        Texture2D tex = new Texture2D(width, height);
+    public Texture2D GenerateTexture(Color[] colorMap, int chunkSize) {
+        Texture2D tex = new Texture2D(chunkSize, chunkSize);
         tex.filterMode = FilterMode.Point;
         tex.wrapMode = TextureWrapMode.Clamp;
 
@@ -34,14 +34,13 @@ public class MapVisualizer : MonoBehaviour {
     }
 
     public Color[] GenerateNoiseColorMap(float[,] noiseMap) {
-        int width = noiseMap.GetLength(0);
-        int height = noiseMap.GetLength(1);
+        int chunkSize = noiseMap.GetLength(0);
 
-        Color[] colorMap = new Color[width * height];
+        Color[] colorMap = new Color[chunkSize * chunkSize];
         //map noise map onto color map
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                colorMap[y * width + x] = Color.Lerp(Color.black, Color.white, noiseMap[x, y]);
+        for (int y = 0; y < chunkSize; y++) {
+            for (int x = 0; x < chunkSize; x++) {
+                colorMap[y * chunkSize + x] = Color.Lerp(Color.black, Color.white, noiseMap[x, y]);
             }
         }
 
@@ -49,16 +48,15 @@ public class MapVisualizer : MonoBehaviour {
         
     }
     public Color[] GenerateDepthColorMap(float[,] noiseMap, TerrainLayer[] layers) {
-        int width = noiseMap.GetLength(0);
-        int height = noiseMap.GetLength(1);
+        int chunkSize = noiseMap.GetLength(0);
 
-        Color[] colorMap = new Color[width * height];
+        Color[] colorMap = new Color[chunkSize * chunkSize];
 
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
+        for (int y = 0; y < chunkSize; y++) {
+            for (int x = 0; x < chunkSize; x++) {
                 foreach (TerrainLayer t in layers) {
                     if (noiseMap[x, y] <= t.depth) {
-                        colorMap[y * width + x] = t.color;
+                        colorMap[y * chunkSize + x] = t.color;
                         break;
                     }
                 }

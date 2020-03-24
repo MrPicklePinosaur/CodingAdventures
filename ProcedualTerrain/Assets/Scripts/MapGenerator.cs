@@ -28,17 +28,17 @@ public class MapGenerator : MonoBehaviour {
     public void GenerateMap() {
         MapVisualizer mv = GetComponent<MapVisualizer>();
 
-        float[,] noiseMap = GeneratePerlinNoiseMap(seed, offset, chunkSize, chunkSize, noiseScale, octaves, persistance, lacunarity);
+        float[,] noiseMap = GeneratePerlinNoiseMap(seed, offset, chunkSize, noiseScale, octaves, persistance, lacunarity);
 
         
         if (drawMode == DrawMode.NoiseMap) {
-            Texture2D tex = mv.GenerateTexture(mv.GenerateNoiseColorMap(noiseMap),chunkSize,chunkSize);
+            Texture2D tex = mv.GenerateTexture(mv.GenerateNoiseColorMap(noiseMap),chunkSize);
             mv.PlaneVisualizer(tex);
         } else if (drawMode == DrawMode.ColorMap) {
-            Texture2D tex = mv.GenerateTexture(mv.GenerateDepthColorMap(noiseMap,layers),chunkSize,chunkSize);
+            Texture2D tex = mv.GenerateTexture(mv.GenerateDepthColorMap(noiseMap,layers),chunkSize);
             mv.PlaneVisualizer(tex);
         } else if (drawMode == DrawMode.Mesh) {
-            Texture2D tex = mv.GenerateTexture(mv.GenerateDepthColorMap(noiseMap, layers), chunkSize, chunkSize);
+            Texture2D tex = mv.GenerateTexture(mv.GenerateDepthColorMap(noiseMap, layers), chunkSize);
             CustomMesh customMesh = CustomMesh.GenerateHeightMesh(noiseMap,meshHeightModifier,heightCurve,lod);
             mv.MeshVisualizer(tex,customMesh);
             
@@ -47,7 +47,7 @@ public class MapGenerator : MonoBehaviour {
         
     }
 
-    public static float[,] GeneratePerlinNoiseMap(int seed, Vector2 offset, int width, int height, float scale, int octaves, float persistance, float lacunarity) {
+    public static float[,] GeneratePerlinNoiseMap(int seed, Vector2 offset, int chunkSize, float scale, int octaves, float persistance, float lacunarity) {
 
         System.Random prng = new System.Random(seed);
         Vector2[] octaveOffsets = new Vector2[octaves]; //offset each octave
@@ -55,21 +55,21 @@ public class MapGenerator : MonoBehaviour {
             octaveOffsets[i] = new Vector2(prng.Next(-100000, 100000) + offset.x, prng.Next(-100000, 100000) + offset.y);
         }
 
-        float[,] noiseMap = new float[width, height];
+        float[,] noiseMap = new float[chunkSize, chunkSize];
 
         float minNoise = float.MaxValue;
         float maxNoise = float.MinValue;
 
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
+        for (int y = 0; y < chunkSize; y++) {
+            for (int x = 0; x < chunkSize; x++) {
 
                 float amp = 1;
                 float freq = 1;
                 float noise = 0;
 
                 for (int i = 0; i < octaves; i++) {
-                    float px = (x - width / 2) / scale * freq + octaveOffsets[i].x;
-                    float py = (y - height / 2) / scale * freq + octaveOffsets[i].y;
+                    float px = (x - chunkSize / 2) / scale * freq + octaveOffsets[i].x;
+                    float py = (y - chunkSize / 2) / scale * freq + octaveOffsets[i].y;
                     float perlinValue = Mathf.PerlinNoise(px, py);
                     noise += perlinValue * amp;
 
@@ -86,8 +86,8 @@ public class MapGenerator : MonoBehaviour {
             }
         }
 
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
+        for (int y = 0; y < chunkSize; y++) {
+            for (int x = 0; x < chunkSize; x++) {
                 noiseMap[x, y] = Mathf.InverseLerp(minNoise, maxNoise, noiseMap[x, y]); //normalize noise map values so it falls between 0 and 1
             }
         }

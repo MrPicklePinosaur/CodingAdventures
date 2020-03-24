@@ -8,9 +8,9 @@ public class CustomMesh{
     public int[] triangles;
     public Vector2[] uvs;
 
-    public CustomMesh(int width, int height) { //width and height of grid
-        verticies = new Vector3[(width) * (height)];
-        triangles = new int[(width-1) * (height-1) * 6];
+    public CustomMesh(int chunkSize) { //width and height of grid
+        verticies = new Vector3[chunkSize * chunkSize];
+        triangles = new int[(chunkSize - 1) * (chunkSize - 1) * 6];
         uvs = new Vector2[verticies.Length];
     }
 
@@ -25,19 +25,18 @@ public class CustomMesh{
 
     public static CustomMesh GenerateHeightMesh(float[,] noiseMap, float meshHeightModifier, AnimationCurve heightCurve, int lod) {
 
-        int width = noiseMap.GetLength(0);
-        int height = noiseMap.GetLength(1);
+        int chunkSize = noiseMap.GetLength(0);
 
         int inc = (lod == 0) ? 1 : lod * 2;
-        int vert = (width - 1) / inc + 1;
+        int vert = (chunkSize - 1) / inc + 1;
 
-        CustomMesh customMesh = new CustomMesh(width,height);
+        CustomMesh customMesh = new CustomMesh(chunkSize);
 
         //populate verticies
-        for (int v = 0, i = 0; v < height; v+=inc) {
-            for (int u = 0; u < width; u+=inc, i++) {
-                customMesh.verticies[i] = new Vector3(u-(width-1)/2f, heightCurve.Evaluate(noiseMap[u,v])*meshHeightModifier, v-(height-1)/2f);
-                customMesh.uvs[i] = new Vector2((float)u / width, (float)v / height);
+        for (int v = 0, i = 0; v < chunkSize; v+=inc) {
+            for (int u = 0; u < chunkSize; u+=inc, i++) {
+                customMesh.verticies[i] = new Vector3(u-(chunkSize - 1)/2f, heightCurve.Evaluate(noiseMap[u,v])*meshHeightModifier, v-(chunkSize - 1)/2f);
+                customMesh.uvs[i] = new Vector2((float)u / chunkSize, (float)v / chunkSize);
             }
         }
 
