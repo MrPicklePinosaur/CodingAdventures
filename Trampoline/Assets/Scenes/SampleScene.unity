@@ -471,7 +471,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   force: 0
-  forcePointOffset: 0.1
+  forcePointOffset: 1
 --- !u!1 &2090353541
 GameObject:
   m_ObjectHideFlags: 0
