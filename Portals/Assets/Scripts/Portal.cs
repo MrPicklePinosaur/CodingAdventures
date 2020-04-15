@@ -34,8 +34,10 @@ public class Portal : MonoBehaviour {
 
         linkedPortal.GetComponent<Portal>().disableScreen();
 
+        //TODO: actually understand the math 
         Matrix4x4 mat = linkedPortal.transform.localToWorldMatrix * transform.worldToLocalMatrix * viewerCam.transform.localToWorldMatrix;
         portalCam.transform.SetPositionAndRotation(mat.GetColumn(3),mat.rotation);
+
         portalCam.Render();
 
         linkedPortal.GetComponent<Portal>().enableScreen();

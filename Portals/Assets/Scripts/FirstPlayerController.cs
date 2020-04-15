@@ -13,7 +13,7 @@ public class FirstPlayerController : MonoBehaviour {
 
     private float pitch = 0f;
     private float yaw = 0f;
-
+    
     void Start() {
         playerCamera = GetComponentInChildren<Camera>();
         rb = GetComponent<Rigidbody>();
