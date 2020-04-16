@@ -9,6 +9,7 @@
 				"RenderType" = "Opaque"
 				"Queue" = "Geometry"
 		}
+		Cull Off
 		Pass {
 			CGPROGRAM
 			#include "UnityCG.cginc"

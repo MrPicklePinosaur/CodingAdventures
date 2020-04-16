@@ -11,26 +11,35 @@ public class Portal : MonoBehaviour {
 
     RenderTexture rt;
 
-    void Start() {
+    void Awake() {
         portalCam = GetComponentInChildren<Camera>();
         viewerCam = Camera.main;
         screen = GetComponentInChildren<Renderer>();
 
-        rt = new RenderTexture(Screen.width, Screen.height,0);
-        portalCam.targetTexture = rt;
         portalCam.enabled = false;
 
-        screen.material.SetTexture("_MainTex",rt);
+        rt = new RenderTexture(Screen.width, Screen.height, 0);
+        portalCam.targetTexture = rt;
+
+        screen.material.SetTexture("_MainTex", rt);
 
     }
 
-    void Update() {
+    public void Render() {
 
+        GenerateRenderTexture();
         updateLinkedCamPosition();
 
     }
 
+    void GenerateRenderTexture() {
+
+
+    }
+
     void updateLinkedCamPosition() {
+
+        //if (screen.isVisibleFrom())
 
         linkedPortal.GetComponent<Portal>().disableScreen();
 
