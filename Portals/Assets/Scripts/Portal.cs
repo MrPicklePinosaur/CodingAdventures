@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(BoxCollider))]
 public class Portal : MonoBehaviour {
 
     public GameObject linkedPortal;
@@ -10,6 +11,7 @@ public class Portal : MonoBehaviour {
     Renderer screen;
 
     RenderTexture rt;
+    BoxCollider col;
 
     void Awake() {
         portalCam = GetComponentInChildren<Camera>();
@@ -23,6 +25,10 @@ public class Portal : MonoBehaviour {
 
         screen.material.SetTexture("_MainTex", rt);
 
+        //set collider to same size as portal screen
+        col = GetComponent<BoxCollider>();
+        col.size = screen.gameObject.transform.localScale;
+        col.isTrigger = true;
     }
 
     public void Render() {
@@ -59,4 +65,25 @@ public class Portal : MonoBehaviour {
         screen.enabled = false;
     }
 
+    private void OnTriggerEnter(Collider other) {
+        
+        PortalTraveller travel = other.GetComponent<PortalTraveller>();
+        if (travel == null) { return; }
+        if (travel.getEntrancePortal() != null) { return; }
+
+        travel.Teleport(transform,linkedPortal.transform);
+
+
+    }
+
+    
+    private void OnTriggerExit(Collider other) {
+        PortalTraveller travel = other.GetComponent<PortalTraveller>();
+        if (travel == null) { return; }
+
+        if (travel.getEntrancePortal() != gameObject) {
+            travel.resetEntrancePortal();
+        }
+    }
+    
 }
