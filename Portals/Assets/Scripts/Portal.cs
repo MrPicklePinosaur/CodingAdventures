@@ -29,19 +29,35 @@ public class Portal : MonoBehaviour {
         col = GetComponent<BoxCollider>();
         col.size = screen.gameObject.transform.localScale;
         col.isTrigger = true;
+
+
+        //make it so the camera wont clip with the screen
+        //AdjustThicknessForClipping();
     }
+    
+    
+    //code from https://github.com/SebLague/Portals/blob/master/Assets/Scripts/Core/Portal.cs
+    public void AdjustThicknessForClipping() {
+        float halfHeight = viewerCam.nearClipPlane * Mathf.Tan(viewerCam.fieldOfView * 0.5f * Mathf.Deg2Rad);
+        float halfWidth = halfHeight * viewerCam.aspect;
+        float dstToNearClipPlaneCorner = new Vector3(halfWidth, halfHeight, viewerCam.nearClipPlane).magnitude;
+        float screenThickness = dstToNearClipPlaneCorner;
+
+        Transform screenT = screen.transform;
+        bool camFacingSameDirAsPortal = Vector3.Dot(transform.forward, transform.position - viewerCam.transform.position) > 0;
+        screenT.localScale = new Vector3(screenT.localScale.x, screenT.localScale.y, screenThickness);
+        screenT.localPosition = Vector3.forward * screenThickness * ((camFacingSameDirAsPortal) ? 0.5f : -0.5f);
+    }
+    
+    
 
     public void Render() {
 
-        GenerateRenderTexture();
+        AdjustThicknessForClipping();
         updateLinkedCamPosition();
 
     }
 
-    void GenerateRenderTexture() {
-
-
-    }
 
     void updateLinkedCamPosition() {
 
@@ -65,25 +81,36 @@ public class Portal : MonoBehaviour {
         screen.enabled = false;
     }
 
+
+    public GameObject getExitPortal() {
+        return linkedPortal;
+    }
+
     private void OnTriggerEnter(Collider other) {
         
         PortalTraveller travel = other.GetComponent<PortalTraveller>();
         if (travel == null) { return; }
-        if (travel.getEntrancePortal() != null) { return; }
 
-        travel.Teleport(transform,linkedPortal.transform);
-
-
+        //entering the entrance portal
+        travel.EnterPortal(this);
     }
 
-    
-    private void OnTriggerExit(Collider other) {
+    private void OnTriggerStay(Collider other) {
         PortalTraveller travel = other.GetComponent<PortalTraveller>();
         if (travel == null) { return; }
 
-        if (travel.getEntrancePortal() != gameObject) {
-            travel.resetEntrancePortal();
-        }
+        travel.AttemptTeleport();
     }
+
+
+    private void OnTriggerExit(Collider other) {
+
+        PortalTraveller travel = other.GetComponent<PortalTraveller>();
+        if (travel == null) { return; }
+
+        travel.ExitPortal(this);
+        
+    }
+    
     
 }
