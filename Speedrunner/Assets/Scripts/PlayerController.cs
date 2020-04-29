@@ -6,16 +6,15 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
 
     public float moveSpeed;
+    public float walkMaxSpeed;
     public float maxSpeed;
-
+    public float sprintMaxSpeed;
 
     public float rotateSpeed;
     public float accelTiltIntensity;
     public float tiltSpeed;
     Vector3 prevPosition;
     Vector3 prevVelocity;
-
-    public float sprintMaxSpeed;
 
     public Vector2 lookSpeed;
     public float lookClamp;
@@ -59,22 +58,23 @@ public class PlayerController : MonoBehaviour {
         float curMaxSpeed = maxSpeed;
         if (Input.GetKey(KeyCode.LeftShift)) {
             curMaxSpeed = sprintMaxSpeed;
+        } else if (Input.GetKey(KeyCode.LeftControl)) {
+            curMaxSpeed = walkMaxSpeed;
         }
 
         rb.velocity = new Vector3(Mathf.Clamp(rb.velocity.x,-curMaxSpeed, curMaxSpeed),rb.velocity.y, Mathf.Clamp(rb.velocity.z, -curMaxSpeed, curMaxSpeed));
 
-
-        //rotate in direction of camera
-        Vector3 camRot = playerCamera.transform.rotation.eulerAngles;
-        model.transform.rotation = Quaternion.Slerp(model.transform.rotation,Quaternion.Euler(0,camRot.y,0),rotateSpeed*Time.deltaTime);
-
-
         //tilt in direction of movement
         Vector3 accel = Vector3.ProjectOnPlane(rb.velocity - prevVelocity,Vector3.up)/Time.deltaTime;
 
-        Vector3 tiltAxis = Vector3.Cross(Vector3.ProjectOnPlane(accel,Vector3.up),Vector3.up);
+        Vector3 tiltAxis = Vector3.Cross(accel,Vector3.up);
         Quaternion targetTilt = Quaternion.AngleAxis(Vector3.Magnitude(accel) * accelTiltIntensity, tiltAxis);
-        model.transform.localRotation = Quaternion.Slerp(model.transform.localRotation,targetTilt,tiltSpeed*Time.deltaTime);
+        model.transform.rotation = Quaternion.Slerp(model.transform.rotation,targetTilt,tiltSpeed*Time.deltaTime);
+
+        //rotate in direction of camera
+        //NOTE, MAKE IT SO CAMERA IS NOT A CHILD OF THE PLAYER
+        Vector3 camRot = playerCamera.transform.rotation.eulerAngles;
+        transform.rotation = Quaternion.Slerp(transform.rotation,Quaternion.Euler(transform.rotation.x,camRot.y, transform.rotation.z),rotateSpeed*Time.deltaTime);
         
 
         //Jumping

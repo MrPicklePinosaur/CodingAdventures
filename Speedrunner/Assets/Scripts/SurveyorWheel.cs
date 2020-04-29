@@ -5,8 +5,6 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class SurveyorWheel : MonoBehaviour {
 
-    public float runAnimSpeed;
-    public float stepDistance;
 
     public float wheelRadius;
 
@@ -32,15 +30,16 @@ public class SurveyorWheel : MonoBehaviour {
         float turnAngle = (float)(dist / wheelRadius); // theta = s/r
 
         //update animation
-        runStage += turnAngle*runAnimSpeed;
+        runStage += turnAngle;
 
-        if (runStage > stepDistance) {
+        float wheelDiam = 2 * Mathf.PI * wheelRadius;
+        if (runStage > wheelDiam) {
             runStage = 0;
         } else if (runStage < 0) {
-            runStage = stepDistance;
+            runStage = wheelDiam;
         }
 
-        anim.SetFloat("runStage", runStage/stepDistance);
+        anim.SetFloat("runStage", runStage/ wheelDiam);
 
         if (anim.GetFloat("runStage") > 1f) {
             anim.SetFloat("runStage",0);
