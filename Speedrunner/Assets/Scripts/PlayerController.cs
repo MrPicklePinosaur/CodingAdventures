@@ -7,8 +7,7 @@ public class PlayerController : MonoBehaviour {
 
     public float moveSpeed;
     public float maxSpeed;
-    public float moveDamping;
-    public float dampThreshold;
+
 
     public float rotateSpeed;
     public float accelTiltIntensity;
@@ -56,22 +55,6 @@ public class PlayerController : MonoBehaviour {
         rb.velocity += Vector3.ProjectOnPlane(playerCamera.transform.forward, Vector3.up).normalized * usin.y * moveSpeed * Time.deltaTime;
         rb.velocity += Vector3.ProjectOnPlane(playerCamera.transform.right, Vector3.up).normalized * usin.x * moveSpeed * Time.deltaTime;
 
-        //apply some friction
-        float x_damp = 0;
-        if (Mathf.Abs(rb.velocity.x) > dampThreshold) {
-            x_damp = -1 * rb.velocity.x / Mathf.Abs(rb.velocity.x) * moveDamping * Time.deltaTime;
-        } else {
-            rb.velocity = new Vector3(0,rb.velocity.y,rb.velocity.z);
-        }
-        float z_damp = 0;
-        if (Mathf.Abs(rb.velocity.z) > dampThreshold) {
-            z_damp = -1 * rb.velocity.z / Mathf.Abs(rb.velocity.z) * moveDamping * Time.deltaTime;
-        } else {
-            rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, 0);
-        }
-        rb.velocity += new Vector3(x_damp,0,z_damp);
-
-
         //max movement speed
         float curMaxSpeed = maxSpeed;
         if (Input.GetKey(KeyCode.LeftShift)) {
@@ -81,19 +64,24 @@ public class PlayerController : MonoBehaviour {
         rb.velocity = new Vector3(Mathf.Clamp(rb.velocity.x,-curMaxSpeed, curMaxSpeed),rb.velocity.y, Mathf.Clamp(rb.velocity.z, -curMaxSpeed, curMaxSpeed));
 
         //rotate in direction of movement
-        /*
+        
         Vector3 facing = transform.position - prevPosition;
-        if (Mathf.Abs(facing.x) > 0 && Mathf.Abs(facing.z) > 0) {
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(facing), rotateSpeed * Time.deltaTime);
+        if (Mathf.Abs(facing.x) > 0 || Mathf.Abs(facing.z) > 0) {
+            model.transform.rotation = Quaternion.Lerp(model.transform.rotation, Quaternion.LookRotation(facing), rotateSpeed * Time.deltaTime);
         }
-        */
+        
+        
         
 
         //tilt in direction of movement
-        float accel = Vector3.Magnitude(Vector3.ProjectOnPlane(rb.velocity - prevVelocity, Vector3.up));
-        Vector3 tiltAxis = Vector3.Cross(Vector3.ProjectOnPlane(transform.forward,Vector3.up),Vector3.up);
-        Quaternion targetTilt = Quaternion.AngleAxis(accel * accelTiltIntensity, tiltAxis);
-        model.transform.rotation = Quaternion.Slerp(model.transform.rotation,targetTilt,tiltSpeed*Time.deltaTime);
+        Vector3 accel = Vector3.ProjectOnPlane(rb.velocity - prevVelocity,Vector3.up)/Time.deltaTime;
+
+        //Debug.Log($"{rb.velocity},{prevVelocity},{accel}");
+        
+        Vector3 tiltAxis = Vector3.Cross(Vector3.ProjectOnPlane(accel,Vector3.up),Vector3.up);
+        Quaternion targetTilt = Quaternion.AngleAxis(Vector3.Magnitude(accel) * accelTiltIntensity, tiltAxis);
+        model.transform.localRotation = Quaternion.Slerp(model.transform.localRotation,targetTilt,tiltSpeed*Time.deltaTime);
+        
 
         //Jumping
         if (Input.GetKey(KeyCode.Space) && !jumpTimer.isActive && isOnGround) { //if not jumping, start jump
