@@ -3263,6 +3263,7 @@ GameObject:
   m_Component:
   - component: {fileID: 950381418}
   - component: {fileID: 950154891}
+  - component: {fileID: 950154893}
   m_Layer: 0
   m_Name: unitychan
   m_TagString: Untagged
@@ -3305,6 +3306,20 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &950154893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 950154890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8011f15f366362847938b8c083ffaa08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  runAnimSpeed: 0.25
+  stepDistance: 20
 --- !u!1 &950154894
 GameObject:
   m_ObjectHideFlags: 0
