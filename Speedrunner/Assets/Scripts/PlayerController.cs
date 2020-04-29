@@ -10,6 +10,12 @@ public class PlayerController : MonoBehaviour {
     public float moveDamping;
     public float dampThreshold;
 
+    public float rotateSpeed;
+    public float accelTiltIntensity;
+    public float tiltSpeed;
+    Vector3 prevPosition;
+    Vector3 prevVelocity;
+
     public float sprintMaxSpeed;
 
     public Vector2 lookSpeed;
@@ -27,7 +33,12 @@ public class PlayerController : MonoBehaviour {
     Rigidbody rb;
     Camera playerCamera;
 
+    public GameObject model;
+
     void Start() {
+
+        prevPosition = transform.position;
+
         rb = GetComponent<Rigidbody>();
         playerCamera = GetComponentInChildren<Camera>();
 
@@ -42,8 +53,7 @@ public class PlayerController : MonoBehaviour {
 
         Vector2 usin = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
 
-
-        rb.velocity += Vector3.ProjectOnPlane(playerCamera.transform.forward,Vector3.up).normalized * usin.y * moveSpeed * Time.deltaTime;
+        rb.velocity += Vector3.ProjectOnPlane(playerCamera.transform.forward, Vector3.up).normalized * usin.y * moveSpeed * Time.deltaTime;
         rb.velocity += Vector3.ProjectOnPlane(playerCamera.transform.right, Vector3.up).normalized * usin.x * moveSpeed * Time.deltaTime;
 
         //apply some friction
@@ -69,7 +79,21 @@ public class PlayerController : MonoBehaviour {
         }
 
         rb.velocity = new Vector3(Mathf.Clamp(rb.velocity.x,-curMaxSpeed, curMaxSpeed),rb.velocity.y, Mathf.Clamp(rb.velocity.z, -curMaxSpeed, curMaxSpeed));
+
+        //rotate in direction of movement
+        /*
+        Vector3 facing = transform.position - prevPosition;
+        if (Mathf.Abs(facing.x) > 0 && Mathf.Abs(facing.z) > 0) {
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(facing), rotateSpeed * Time.deltaTime);
+        }
+        */
         
+
+        //tilt in direction of movement
+        float accel = Vector3.Magnitude(Vector3.ProjectOnPlane(rb.velocity - prevVelocity, Vector3.up));
+        Vector3 tiltAxis = Vector3.Cross(Vector3.ProjectOnPlane(transform.forward,Vector3.up),Vector3.up);
+        Quaternion targetTilt = Quaternion.AngleAxis(accel * accelTiltIntensity, tiltAxis);
+        model.transform.rotation = Quaternion.Slerp(model.transform.rotation,targetTilt,tiltSpeed*Time.deltaTime);
 
         //Jumping
         if (Input.GetKey(KeyCode.Space) && !jumpTimer.isActive && isOnGround) { //if not jumping, start jump
@@ -93,6 +117,10 @@ public class PlayerController : MonoBehaviour {
 
         isOnGround = false;
 
+
+        //update stuff
+        prevPosition = transform.position;
+        prevVelocity = rb.velocity;
     }
 
     private void OnCollisionStay(Collision collision) {
