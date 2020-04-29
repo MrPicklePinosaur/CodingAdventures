@@ -338,6 +338,7 @@ GameObject:
   - component: {fileID: 477063976}
   - component: {fileID: 477063974}
   - component: {fileID: 477063973}
+  - component: {fileID: 477063975}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -360,6 +361,7 @@ MonoBehaviour:
   moveSpeed: 30
   maxSpeed: 5
   moveDamping: 10
+  dampThreshold: 0.1
   sprintMaxSpeed: 10
   lookSpeed: {x: 2, y: 2}
   lookClamp: 90
@@ -375,12 +377,25 @@ Rigidbody:
   serializedVersion: 2
   m_Mass: 1
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 1
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
+--- !u!114 &477063975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 477063972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed1adb27bba10ca4099645d7558ee156, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotateSpeed: 20
 --- !u!23 &477063976
 MeshRenderer:
   m_ObjectHideFlags: 0

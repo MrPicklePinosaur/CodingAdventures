@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour {
     public float moveSpeed;
     public float maxSpeed;
     public float moveDamping;
+    public float dampThreshold;
 
     public float sprintMaxSpeed;
 
@@ -47,12 +48,16 @@ public class PlayerController : MonoBehaviour {
 
         //apply some friction
         float x_damp = 0;
-        if (Mathf.Abs(rb.velocity.x) > 0) {
+        if (Mathf.Abs(rb.velocity.x) > dampThreshold) {
             x_damp = -1 * rb.velocity.x / Mathf.Abs(rb.velocity.x) * moveDamping * Time.deltaTime;
+        } else {
+            rb.velocity = new Vector3(0,rb.velocity.y,rb.velocity.z);
         }
         float z_damp = 0;
-        if (Mathf.Abs(rb.velocity.z) > 0) {
+        if (Mathf.Abs(rb.velocity.z) > dampThreshold) {
             z_damp = -1 * rb.velocity.z / Mathf.Abs(rb.velocity.z) * moveDamping * Time.deltaTime;
+        } else {
+            rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, 0);
         }
         rb.velocity += new Vector3(x_damp,0,z_damp);
 
