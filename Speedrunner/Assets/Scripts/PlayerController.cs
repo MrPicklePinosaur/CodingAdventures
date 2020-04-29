@@ -33,7 +33,7 @@ public class PlayerController : MonoBehaviour {
         jumpTimer = gameObject.AddComponent<Timer>();
         jumpTimer.duration = maxJumpHoldTime;
 
-        Cursor.lockState = CursorLockMode.Locked; //cant move mouse
+        //Cursor.lockState = CursorLockMode.Locked; //cant move mouse
     }
 
 
