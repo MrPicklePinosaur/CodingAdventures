@@ -63,21 +63,15 @@ public class PlayerController : MonoBehaviour {
 
         rb.velocity = new Vector3(Mathf.Clamp(rb.velocity.x,-curMaxSpeed, curMaxSpeed),rb.velocity.y, Mathf.Clamp(rb.velocity.z, -curMaxSpeed, curMaxSpeed));
 
-        //rotate in direction of movement
-        
-        Vector3 facing = transform.position - prevPosition;
-        if (Mathf.Abs(facing.x) > 0 || Mathf.Abs(facing.z) > 0) {
-            model.transform.rotation = Quaternion.Lerp(model.transform.rotation, Quaternion.LookRotation(facing), rotateSpeed * Time.deltaTime);
-        }
-        
-        
-        
+
+        //rotate in direction of camera
+        Vector3 camRot = playerCamera.transform.rotation.eulerAngles;
+        model.transform.rotation = Quaternion.Slerp(model.transform.rotation,Quaternion.Euler(0,camRot.y,0),rotateSpeed*Time.deltaTime);
+
 
         //tilt in direction of movement
         Vector3 accel = Vector3.ProjectOnPlane(rb.velocity - prevVelocity,Vector3.up)/Time.deltaTime;
 
-        //Debug.Log($"{rb.velocity},{prevVelocity},{accel}");
-        
         Vector3 tiltAxis = Vector3.Cross(Vector3.ProjectOnPlane(accel,Vector3.up),Vector3.up);
         Quaternion targetTilt = Quaternion.AngleAxis(Vector3.Magnitude(accel) * accelTiltIntensity, tiltAxis);
         model.transform.localRotation = Quaternion.Slerp(model.transform.localRotation,targetTilt,tiltSpeed*Time.deltaTime);

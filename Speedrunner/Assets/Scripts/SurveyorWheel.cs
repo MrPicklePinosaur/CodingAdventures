@@ -23,16 +23,21 @@ public class SurveyorWheel : MonoBehaviour {
 
     void Update() {
 
+        //find out if we are walking forwards or backwards
+        float d = Vector3.Dot(transform.forward, Vector3.ProjectOnPlane(transform.position, Vector3.up)-prevPosition);
+        int direct = (d >= 0) ? 1 : -1;
+
         //turn surveyor wheel
-        float dist = Vector3.Distance(Vector3.ProjectOnPlane(transform.position, Vector3.up), prevPosition);
+        float dist = direct*Vector3.Distance(Vector3.ProjectOnPlane(transform.position, Vector3.up), prevPosition);
         float turnAngle = (float)(dist / wheelRadius); // theta = s/r
-        Debug.Log(turnAngle);
 
         //update animation
         runStage += turnAngle*runAnimSpeed;
 
         if (runStage > stepDistance) {
             runStage = 0;
+        } else if (runStage < 0) {
+            runStage = stepDistance;
         }
 
         anim.SetFloat("runStage", runStage/stepDistance);
