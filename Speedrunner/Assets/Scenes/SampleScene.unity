@@ -361,6 +361,7 @@ MonoBehaviour:
   moveSpeed: 30
   maxSpeed: 5
   moveDamping: 10
+  sprintMaxSpeed: 10
   lookSpeed: {x: 2, y: 2}
   lookClamp: 90
   jumpSpeed: 20

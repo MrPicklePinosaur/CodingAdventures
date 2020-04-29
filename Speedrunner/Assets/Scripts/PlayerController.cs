@@ -9,6 +9,8 @@ public class PlayerController : MonoBehaviour {
     public float maxSpeed;
     public float moveDamping;
 
+    public float sprintMaxSpeed;
+
     public Vector2 lookSpeed;
     public float lookClamp;
 
@@ -56,7 +58,12 @@ public class PlayerController : MonoBehaviour {
 
 
         //max movement speed
-        rb.velocity = new Vector3(Mathf.Clamp(rb.velocity.x,-maxSpeed,maxSpeed),rb.velocity.y, Mathf.Clamp(rb.velocity.z, -maxSpeed, maxSpeed));
+        float curMaxSpeed = maxSpeed;
+        if (Input.GetKey(KeyCode.LeftShift)) {
+            curMaxSpeed = sprintMaxSpeed;
+        }
+
+        rb.velocity = new Vector3(Mathf.Clamp(rb.velocity.x,-curMaxSpeed, curMaxSpeed),rb.velocity.y, Mathf.Clamp(rb.velocity.z, -curMaxSpeed, curMaxSpeed));
         
 
         //Jumping
