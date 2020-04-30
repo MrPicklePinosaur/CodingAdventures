@@ -8,7 +8,11 @@ public class PlayerAnimator : MonoBehaviour {
     Rigidbody rb;
     Vector3 prevVelocity;
 
+    public GameObject model;
+
     public float accelTiltIntensity;
+    public float tiltSpeed;
+
     void Start() {
         rb = GetComponent<Rigidbody>();
         prevVelocity = Vector3.zero;
@@ -17,20 +21,14 @@ public class PlayerAnimator : MonoBehaviour {
 
     void Update() {
 
+        //tilt in direction of movement
+        Vector3 accel = Vector3.ProjectOnPlane(rb.velocity - prevVelocity, Vector3.up) / Time.deltaTime;
 
+        Vector3 tiltAxis = Vector3.Cross(accel, Vector3.up);
+        Quaternion targetTilt = Quaternion.AngleAxis(Vector3.Magnitude(accel) * accelTiltIntensity, tiltAxis);
+        model.transform.rotation = Quaternion.Slerp(model.transform.rotation, targetTilt, tiltSpeed * Time.deltaTime);
 
-        //tilt player based on acceleration
-        Vector3 accel = Vector3.ProjectOnPlane(rb.velocity - prevVelocity,Vector3.up);
-        transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.Euler(accel * accelTiltIntensity),Time.deltaTime*accelTiltIntensity);
-
-        //rb.AddTorque(accel*accelTiltIntensity);
-
-        //apply a restoring force
-
-
-        //Clamp tilt
-
-
+        //update stuff
         prevVelocity = rb.velocity;
 
     }

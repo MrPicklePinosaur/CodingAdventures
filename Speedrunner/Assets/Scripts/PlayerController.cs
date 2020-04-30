@@ -11,10 +11,6 @@ public class PlayerController : MonoBehaviour {
     public float sprintMaxSpeed;
 
     public float rotateSpeed;
-    public float accelTiltIntensity;
-    public float tiltSpeed;
-    Vector3 prevPosition;
-    Vector3 prevVelocity;
 
     public Vector2 lookSpeed;
     public float lookClamp;
@@ -26,16 +22,13 @@ public class PlayerController : MonoBehaviour {
 
     //camera stuff
     private float pitch = 0f;
-    private float yaw = 0f;
 
     Rigidbody rb;
     Camera playerCamera;
 
-    public GameObject model;
+
 
     void Start() {
-
-        prevPosition = transform.position;
 
         rb = GetComponent<Rigidbody>();
         playerCamera = GetComponentInChildren<Camera>();
@@ -43,11 +36,11 @@ public class PlayerController : MonoBehaviour {
         jumpTimer = gameObject.AddComponent<Timer>();
         jumpTimer.duration = maxJumpHoldTime;
 
-        //Cursor.lockState = CursorLockMode.Locked; //cant move mouse
+        Cursor.lockState = CursorLockMode.Locked; //cant move mouse
     }
 
 
-    void Update() {
+    void FixedUpdate() {
 
         Vector2 usin = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
 
@@ -64,18 +57,6 @@ public class PlayerController : MonoBehaviour {
 
         rb.velocity = new Vector3(Mathf.Clamp(rb.velocity.x,-curMaxSpeed, curMaxSpeed),rb.velocity.y, Mathf.Clamp(rb.velocity.z, -curMaxSpeed, curMaxSpeed));
 
-        //tilt in direction of movement
-        Vector3 accel = Vector3.ProjectOnPlane(rb.velocity - prevVelocity,Vector3.up)/Time.deltaTime;
-
-        Vector3 tiltAxis = Vector3.Cross(accel,Vector3.up);
-        Quaternion targetTilt = Quaternion.AngleAxis(Vector3.Magnitude(accel) * accelTiltIntensity, tiltAxis);
-        model.transform.rotation = Quaternion.Slerp(model.transform.rotation,targetTilt,tiltSpeed*Time.deltaTime);
-
-        //rotate in direction of camera
-        //NOTE, MAKE IT SO CAMERA IS NOT A CHILD OF THE PLAYER
-        Vector3 camRot = playerCamera.transform.rotation.eulerAngles;
-        transform.rotation = Quaternion.Slerp(transform.rotation,Quaternion.Euler(transform.rotation.x,camRot.y, transform.rotation.z),rotateSpeed*Time.deltaTime);
-        
 
         //Jumping
         if (Input.GetKey(KeyCode.Space) && !jumpTimer.isActive && isOnGround) { //if not jumping, start jump
@@ -89,20 +70,34 @@ public class PlayerController : MonoBehaviour {
         }
         
 
-        //Camera
-        yaw += lookSpeed.x * Input.GetAxis("Mouse X");
-        pitch -= lookSpeed.y * Input.GetAxis("Mouse Y");
 
-        pitch = Mathf.Clamp(pitch,-lookClamp,lookClamp); //clamp vertical look
-
-        playerCamera.transform.eulerAngles = new Vector3(pitch, yaw, 0f);
 
         isOnGround = false;
 
+    }
 
-        //update stuff
-        prevPosition = transform.position;
-        prevVelocity = rb.velocity;
+    private void Update() {
+        //Camera
+        var yaw = lookSpeed.x * Input.GetAxis("Mouse X") * Time.deltaTime;
+        pitch -= lookSpeed.y * Input.GetAxis("Mouse Y") * Time.deltaTime;
+
+        pitch = Mathf.Clamp(pitch, -lookClamp, lookClamp); //clamp vertical look
+
+        //playerCamera.transform.eulerAngles = new Vector3(pitch, yaw, 0f);
+        playerCamera.transform.localRotation = Quaternion.Euler(pitch, 0f, 0f);
+
+        //rotate in direction of camera
+        //NOTE, MAKE IT SO CAMERA IS NOT A CHILD OF THE PLAYER
+        transform.Rotate(Vector3.up*yaw);
+
+        //transform.rotation = Quaternion.Euler();
+        /*
+        Vector3 camRot = playerCamera.transform.rotation.eulerAngles;
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(transform.rotation.x, camRot.y, transform.rotation.z), rotateSpeed * Time.deltaTime);
+        */
+
+
+
     }
 
     private void OnCollisionStay(Collision collision) {
